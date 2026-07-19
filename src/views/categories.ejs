@@ -1,13 +1,15 @@
 <%- include('partials/header') %>
     <main>
-        <h1><%= title %> </h1>
+        <h1>
+            <%= title %>
+        </h1>
         <h2>Service Categories</h2>
         <ul>
-            <li>Environmental Conservation - Participate in activities that help protect and preserve the environment.
-            </li>
-            <li>Education & Tutoring - Volunteer to teach or tutor students in various subjects.</li>
-            <li>Community Support - Assist local communities through various support initiatives.</li>
-            <li>Health & Wellness - Engage in activities that promote health and wellness in the community.</li>
+            <% categories.forEach(category=> { %>
+                <li>
+                    <%= category.name %>
+                </li>
+                <% }); %>
         </ul>
     </main>
-<%- include('partials/footer') %>
+    <%- include('partials/footer') %>
