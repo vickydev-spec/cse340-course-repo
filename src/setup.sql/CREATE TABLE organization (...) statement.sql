@@ -197,3 +197,188 @@ project_id | category_id
 2          | 1
 2          | 3
 3          | 4
+
+
+-- ========================================
+-- Insert Service Projects
+-- ========================================
+
+INSERT INTO service_project
+    (organization_id, title, description, location, project_date)
+VALUES
+
+-- ========================================
+-- BrightFuture Builders
+-- organization_id = 1
+-- ========================================
+
+(1,
+ 'Community Park Construction',
+ 'Help build and improve a community park with sustainable materials.',
+ 'Uyo Community Park',
+ '2026-08-05'),
+
+(1,
+ 'Sustainable Housing Project',
+ 'Assist with construction activities for affordable and environmentally friendly homes.',
+ 'Uyo Housing Development',
+ '2026-08-12'),
+
+(1,
+ 'School Renovation Project',
+ 'Help renovate classrooms and improve learning facilities for local students.',
+ 'Community Primary School',
+ '2026-08-19'),
+
+(1,
+ 'Clean Water Infrastructure',
+ 'Support the construction and improvement of clean water facilities in the community.',
+ 'Community Water Center',
+ '2026-08-26'),
+
+(1,
+ 'Community Garden Construction',
+ 'Help construct garden spaces that provide food and educational opportunities for residents.',
+ 'Green Community Center',
+ '2026-09-02'),
+
+-- ========================================
+-- GreenHarvest Growers
+-- organization_id = 2
+-- ========================================
+
+(2,
+ 'Urban Garden Project',
+ 'Help create and maintain an urban garden to promote local food production.',
+ 'Central Community Garden',
+ '2026-08-06'),
+
+(2,
+ 'School Garden Education',
+ 'Teach students about gardening, food production, and environmental sustainability.',
+ 'Local Secondary School',
+ '2026-08-13'),
+
+(2,
+ 'Community Food Harvest',
+ 'Help harvest and distribute fresh vegetables to members of the local community.',
+ 'GreenHarvest Farm',
+ '2026-08-20'),
+
+(2,
+ 'Composting Workshop',
+ 'Participate in a workshop that teaches residents how to reduce waste through composting.',
+ 'Community Learning Center',
+ '2026-08-27'),
+
+(2,
+ 'Tree Planting Initiative',
+ 'Help plant trees and promote environmental sustainability in local neighborhoods.',
+ 'Community Green Space',
+ '2026-09-03'),
+
+-- ========================================
+-- UnityServe Volunteers
+-- organization_id = 3
+-- ========================================
+
+(3,
+ 'Community Food Drive',
+ 'Collect and distribute food to families and individuals who need assistance.',
+ 'UnityServe Community Center',
+ '2026-08-07'),
+
+(3,
+ 'Volunteer Tutoring Program',
+ 'Provide tutoring support to students in various academic subjects.',
+ 'Community Learning Center',
+ '2026-08-14'),
+
+(3,
+ 'Senior Citizen Support',
+ 'Assist elderly community members with basic support and community activities.',
+ 'UnityServe Senior Center',
+ '2026-08-21'),
+
+(3,
+ 'Neighborhood Cleanup',
+ 'Work with volunteers to clean and improve public areas in the local community.',
+ 'Central Neighborhood',
+ '2026-08-28'),
+
+(3,
+ 'Clothing Donation Drive',
+ 'Collect and distribute donated clothing to individuals and families in need.',
+ 'UnityServe Community Center',
+ '2026-09-04');
+
+I should see at least 15 rows. When i run this:
+ SELECT
+    project_id,
+    organization_id,
+    title,
+    location,
+    project_date
+FROM service_project
+ORDER BY organization_id, project_id;
+
+Then I run:
+
+SELECT
+    organization_id,
+    COUNT(*) AS total_projects
+FROM service_project
+GROUP BY organization_id
+ORDER BY organization_id;
+
+You should see something like:
+
+organization_id | total_projects
+----------------+---------------
+1               | 5
+2               | 5
+3               | 5
+
+For example, you can add one category to each project that currently has 0:
+
+INSERT INTO project_category (project_id, category_id)
+VALUES
+(4, 1),
+(5, 2),
+(6, 3),
+(7, 4),
+(8, 1),
+(9, 2),
+(10, 3),
+(11, 4),
+(12, 1),
+(13, 2),
+(14, 3),
+(15, 4),
+(16, 1),
+(17, 2),
+(18, 3);
+
+Your category IDs are:
+
+category_id	        Category
+1	                Environment
+2	                Community Development
+3	                Food and Agriculture
+4	                Community Support
+
+After executing the insert, run your count query again:
+
+SELECT
+    sp.project_id,
+    sp.title,
+    COUNT(pc.category_id) AS category_count
+FROM service_project sp
+LEFT JOIN project_category pc
+    ON sp.project_id = pc.project_id
+GROUP BY sp.project_id, sp.title
+ORDER BY sp.project_id;
+
+You should then see every project with a category_count of at least 1.
+
+Important
