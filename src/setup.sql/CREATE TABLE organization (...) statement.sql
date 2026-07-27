@@ -135,7 +135,7 @@ VALUES
 (2, 3),
 (3, 4);
 
-3. Test the complete database relationships
+/* 3. Test the complete database relationships
 
 Run this query:
 
@@ -197,7 +197,7 @@ project_id | category_id
 2          | 1
 2          | 3
 3          | 4
-
+*/
 
 -- ========================================
 -- Insert Service Projects
@@ -312,7 +312,7 @@ VALUES
  'UnityServe Community Center',
  '2026-09-04');
 
-I should see at least 15 rows. When i run this:
+/* I should see at least 15 rows. When i run this:
  SELECT
     project_id,
     organization_id,
@@ -340,6 +340,7 @@ organization_id | total_projects
 3               | 5
 
 For example, you can add one category to each project that currently has 0:
+*/
 
 INSERT INTO project_category (project_id, category_id)
 VALUES
@@ -359,7 +360,7 @@ VALUES
 (17, 2),
 (18, 3);
 
-Your category IDs are:
+/* Your category IDs are:
 
 category_id	        Category
 1	                Environment
@@ -382,3 +383,4 @@ ORDER BY sp.project_id;
 You should then see every project with a category_count of at least 1.
 
 Important
+*/

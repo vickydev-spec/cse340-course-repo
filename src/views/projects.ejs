@@ -3,24 +3,29 @@
         <h1>
             <%= title %>
         </h1>
-        <h2>Upcoming Service Projects</h2>
-        <ul>
+
+        <div class="projects-container">
             <% projects.forEach(project=> { %>
-                <li>
-                    <h3>
-                        <%= project.title %>
-                    </h3>
+
+                <article class="project-card">
+
+                    <a href="/project/<%= project.project_id %>">
+                        <h2>
+                            <%= project.title %>
+                        </h2>
+                    </a>
+
                     <p>
-                        <%= project.description %>
+                        Organization:
+                        <a href="/organization/<%= project.organization_id %>">
+                            <%= project.organization_name %>
+                        </a>
                     </p>
-                    <p><strong>Location:</strong>
-                        <%= project.location %>
-                    </p>
-                    <p><strong>Date:</strong>
-                        <%= project.project_date %>
-                    </p>
-                </li>
-                <% }); %>
-        </ul>
+
+                </article>
+
+                <% }) %>
+        </div>
+
     </main>
     <%- include('partials/footer') %>
