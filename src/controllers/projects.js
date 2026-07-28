@@ -13,8 +13,8 @@ import {
 const NUMBER_OF_UPCOMING_PROJECTS = 5;
 
 
-// Display upcoming service projects
-async function showProjectsPage(req, res, next) {
+// Display upcoming service projects (// Controller for the Projects page)
+const showProjectsPage = async (req, res, next) => {
     try {
         const projects = await getUpcomingProjects(
             NUMBER_OF_UPCOMING_PROJECTS
@@ -22,16 +22,16 @@ async function showProjectsPage(req, res, next) {
 
         res.render("projects", {
             title: "Upcoming Service Projects",
-            projects
+            projects,
         });
     } catch (error) {
         next(error);
     }
-}
+};
 
+// Display one project and its categories (// Controller for a single Project page)
 
-// Display one project and its categories
-async function showProjectDetailsPage(req, res, next) {
+const showProjectDetailsPage = async (req, res, next) => {
     try {
         const project_id = req.params.id;
 
@@ -40,7 +40,7 @@ async function showProjectDetailsPage(req, res, next) {
         if (!project) {
             return next({
                 status: 404,
-                message: "Project not found"
+                message: "Project not found",
             });
         }
 
@@ -49,16 +49,16 @@ async function showProjectDetailsPage(req, res, next) {
         res.render("project", {
             title: project.title,
             project,
-            categories
+            categories,
         });
     } catch (error) {
         next(error);
     }
-}
-
+};
 
 // Export controller functions
 export {
     showProjectsPage,
     showProjectDetailsPage
 };
+
