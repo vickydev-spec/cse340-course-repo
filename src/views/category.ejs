@@ -1,30 +1,47 @@
 <%- include("partials/header") %>
 
     <main>
+
         <h1>
             <%= category.name %>
         </h1>
 
-        <h2>Service Projects</h2>
+        <h2>
+            Service Projects
+        </h2>
 
         <ul>
+
             <% projects.forEach(project=> { %>
+
                 <li>
+
                     <a href="/project/<%= project.project_id %>">
+
                         <%= project.title %>
+
                     </a>
+
                 </li>
+
                 <% }); %>
+
         </ul>
-        <p>
 
-            <a href="/edit-category/<%= category.category_id %>">
+        <% if (user && user.role_name==="admin" ) { %>
 
-                Edit Category
+            <p>
 
-            </a>
+                <a href="/edit-category/<%= category.category_id %>">
 
-        </p>
+                    Edit Category
+
+                </a>
+
+            </p>
+
+            <% } %>
+
     </main>
 
     <%- include("partials/footer") %>

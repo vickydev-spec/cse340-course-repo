@@ -1,43 +1,55 @@
-<%- include('partials/header') %>
+<%- include("partials/header") %>
 
     <main>
+
         <h1>
             <%= title %>
         </h1>
-        <p>
 
-            <a href="/new-category">
+        <% if (user && user.role_name==="admin" ) { %>
 
-                Create New Category
+            <p>
 
-            </a>
+                <a href="/new-category">
 
-        </p>
+                    Create New Category
 
-        <ul>
-            <% categories.forEach(category=> { %>
+                </a>
 
-                <li>
+            </p>
 
-                    <a href="/category/<%= category.category_id %>">
+            <% } %>
 
-                        <%= category.name %>
+                <ul>
 
-                    </a>
+                    <% categories.forEach(category=> { %>
 
-                    |
+                        <li>
 
-                    <a href="/edit-category/<%= category.category_id %>">
+                            <a href="/category/<%= category.category_id %>">
 
-                        Edit
+                                <%= category.name %>
 
-                    </a>
+                            </a>
 
-                </li>
+                            <% if (user && user.role_name==="admin" ) { %>
 
-                <% }) %>
-        </ul>
+                                |
+
+                                <a href="/edit-category/<%= category.category_id %>">
+
+                                    Edit
+
+                                </a>
+
+                                <% } %>
+
+                        </li>
+
+                        <% }); %>
+
+                </ul>
 
     </main>
 
-    <%- include('partials/footer') %>
+    <%- include("partials/footer") %>

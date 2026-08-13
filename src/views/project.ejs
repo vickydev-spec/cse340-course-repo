@@ -1,6 +1,7 @@
 <%- include("partials/header") %>
 
     <main>
+
         <h1>
             <%= project.title %>
         </h1>
@@ -21,40 +22,59 @@
         </p>
 
         <p>
+
             <strong>Organization:</strong>
+
             <a href="/organization/<%= project.organization_id %>">
+
                 <%= project.organization_name %>
+
             </a>
+
         </p>
 
-        <h2>Categories</h2>
+        <h2>
+            Categories
+        </h2>
 
         <div class="category-tags">
+
             <% categories.forEach(category=> { %>
+
                 <a href="/category/<%= category.category_id %>">
+
                     <%= category.name %>
+
                 </a>
+
                 <% }); %>
+
         </div>
-        <p>
 
-    <a
-        href="/project/<%= project.project_id %>/assign-categories">
+        <% if (user && user.role_name==="admin" ) { %>
 
-        Edit Categories
+            <p>
 
-    </a>
+                <a href="/project/<%= project.project_id %>/assign-categories">
 
-</p>
-<p>
+                    Edit Categories
 
-<a href="/edit-project/<%= project.project_id %>">
+                </a>
 
-Edit Project
+            </p>
 
-</a>
+            <p>
 
-</p>
+                <a href="/edit-project/<%= project.project_id %>">
+
+                    Edit Project
+
+                </a>
+
+            </p>
+
+            <% } %>
+
     </main>
 
-<%- include("partials/footer") %>
+    <%- include("partials/footer") %>

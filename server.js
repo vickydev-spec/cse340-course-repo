@@ -44,11 +44,30 @@ app.use((req, res, next) => {
     next(); // Pass control to the next middleware or route
 });
 
-// Middleware to make NODE_ENV available to all templates
+// Middleware to make session information
+// available to all EJS templates
 app.use((req, res, next) => {
+    // Make NODE_ENV available to templates
     res.locals.NODE_ENV = NODE_ENV;
+
+    // Determine whether a user is logged in
+    res.locals.isLoggedIn = false;
+
+    if (req.session && req.session.user) {
+        res.locals.isLoggedIn = true;
+    }
+
+    // Make the logged-in user available to EJS
+    // This includes role_name for Week 5 authorization
+    res.locals.user = req.session?.user || null;
+
+    // Keep currentUser available as well in case
+    // other parts of your application use it
+    res.locals.user = req.session?.user || null;
+
     next();
 });
+
 
 // Allow Express to receive and process common POST data
 app.use(express.urlencoded({ extended: true }));
@@ -96,7 +115,7 @@ app.use((err, req, res, next) => {
     res.status(status).render(`errors/${template}`, context);
 });
 
-
+// Start server
 app.listen(PORT, async () => {
     try {
         await testConnection();
@@ -108,5 +127,6 @@ app.listen(PORT, async () => {
     }
 
 });
+
 
 

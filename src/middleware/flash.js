@@ -82,8 +82,17 @@ const flashLocals = (req, res, next) => {
     // The function is NOT called here, just made available
     // Messages are only consumed when a template calls flash()
     res.locals.flash = req.flash;
+    // Make flash messages available to EJS templates.
+    res.locals.messages = req.session.flash || {
+        success: [],
+        error: [],
+        warning: [],
+        info: []
+    };
+
     next();
 }
+
 
 /**
  * Combined flash middleware that runs both functions in the correct order

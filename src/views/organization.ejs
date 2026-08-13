@@ -1,33 +1,75 @@
-<%- include('partials/header') %>
-<main>
-    <h1><%= title %></h1>
-        <%
-    const messages = flash();
-    %>
+<%- include("partials/header") %>
 
-    <% if (messages.success.length > 0) { %>
+    <main>
 
-    <div class="flash success">
-        <ul>
-            <% messages.success.forEach(message => { %>
-                <li><%= message %></li>
-            <% }) %>
-        </ul>
-    </div>
+        <h1>
+            <%= title %>
+        </h1>
 
-    <% } %>
+        <% const messages=flash(); %>
 
-    <h2><%= organizationDetails.name %></h2>
-    <img src="/images/<%= organizationDetails.logo_filename %>" alt="<%= organizationDetails.name %> logo">
+            <% if (messages.success.length> 0) { %>
 
-    <p>Description: <%= organizationDetails.description %></p>
+                <div class="flash success">
 
-    <h3>Service Projects</h3>
-    <ul>
-        <% projects.forEach(project => { %>
-            <li><a href="/project/<%= project.project_id %>"><%= project.title %></a></li>
-        <% }) %>
-    </ul>
-    <p><a href="/edit-organization/<%= organizationDetails.organization_id %>">Edit Organization</a></p>
-</main>
-<%- include('partials/footer') %>
+                    <ul>
+
+                        <% messages.success.forEach(message=> { %>
+
+                            <li>
+                                <%= message %>
+                            </li>
+
+                            <% }); %>
+
+                    </ul>
+
+                </div>
+
+                <% } %>
+
+                    <h2>
+                        <%= organizationDetails.name %>
+                    </h2>
+
+                    <img src="/images/<%= organizationDetails.logo_filename %>"
+                        alt="<%= organizationDetails.name %> logo">
+
+                    <p>
+                        Description:
+                        <%= organizationDetails.description %>
+                    </p>
+
+                    <h3>
+                        Service Projects
+                    </h3>
+
+                    <ul>
+
+                        <% projects.forEach(project=> { %>
+
+                            <li>
+
+                                <a href="/project/<%= project.project_id %>">
+                                    <%= project.title %>
+                                </a>
+
+                            </li>
+
+                            <% }); %>
+
+                    </ul>
+
+                    <% if (user && user.role_name==="admin" ) { %>
+
+                        <p>
+                            <a href="/edit-organization/<%= organizationDetails.organization_id %>">
+                                Edit Organization
+                            </a>
+                        </p>
+
+                        <% } %>
+
+    </main>
+
+    <%- include("partials/footer") %>

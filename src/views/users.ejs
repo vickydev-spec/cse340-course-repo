@@ -1,0 +1,61 @@
+<%- include("partials/header") %>
+
+    <main>
+
+        <h1>
+            <%= title %>
+        </h1>
+
+        <p>
+            Here is a list of all registered users.
+        </p>
+
+        <% if (users.length> 0) { %>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    <% users.forEach(user=> { %>
+
+                        <tr>
+                            <td>
+                                <%= user.username %>
+                            </td>
+
+                            <td>
+                                <%= user.email %>
+                            </td>
+
+                            <td>
+                                <%= user.role_name %>
+                            </td>
+                        </tr>
+
+                        <% }) %>
+
+                </tbody>
+            </table>
+
+            <% } else { %>
+
+                <p>No registered users were found.</p>
+
+                <% } %>
+
+                    <p>
+                        <a href="/dashboard">
+                            Back to Dashboard
+                        </a>
+                    </p>
+
+    </main>
+
+    <%- include("partials/footer") %>
