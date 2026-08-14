@@ -428,3 +428,7 @@ JOIN roles r ON u.role_id = r.role_id;
 
 -- Delete the test user
 DELETE FROM users WHERE email = 'test@example.com';
+
+UPDATE public.users
+SET password_hash = '$2b$10$2zYO1IkMpJQGZEoGDlSLQ.P4A/np30w1Bc0Dy3o1QWq0/Q0zBzuQe'
+WHERE email = 'admin@example.com';
