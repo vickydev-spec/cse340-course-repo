@@ -80,9 +80,9 @@
             <% } %>
 
 
-                <!-- =====================================================
-         WEEK 6 VOLUNTEER FUNCTIONALITY
-    ====================================================== -->
+                <!-- ===================================================== -->
+                <!-- VOLUNTEER FUNCTIONALITY -->
+                <!-- ===================================================== -->
 
                 <% if (user) { %>
 
@@ -90,39 +90,39 @@
 
                         <h2>Volunteer</h2>
 
-
                         <% if (volunteerStatus) { %>
-
-                            <!-- User is already volunteering -->
 
                             <p>
                                 You are volunteering for this project.
                             </p>
 
-                            <a href="/project/<%= project.project_id %>/remove-volunteer" class="button">
-                                Remove Me as a Volunteer
-                            </a>
+                            <p>
 
+                                <a href="/project/<%= project.project_id %>/remove-volunteer" class="button">
+                                    Remove Me as a Volunteer
+                                </a>
+
+                            </p>
 
                             <% } else { %>
-
-                                <!-- User has not volunteered yet -->
 
                                 <p>
                                     Interested in helping with this project?
                                 </p>
 
-                                <a href="/project/<%= project.project_id %>/volunteer" class="button">
-                                    Volunteer for This Project
-                                </a>
+                                <p>
+
+                                    <a href="/project/<%= project.project_id %>/volunteer" class="button">
+                                        Volunteer for This Project
+                                    </a>
+
+                                </p>
 
                                 <% } %>
 
                     </section>
 
                     <% } %>
-
-
                         <!-- =====================================================
          BACK TO PROJECTS
     ====================================================== -->

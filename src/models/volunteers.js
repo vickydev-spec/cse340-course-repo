@@ -47,7 +47,7 @@ const removeVolunteer = async (userId, projectId) => {
 
 
 // ============================================================
-// GET USER'S VOLUNTEER PROJECTS
+// GET VOLUNTEER PROJECTS
 // ============================================================
 
 const getVolunteerProjects = async (userId) => {
@@ -58,6 +58,7 @@ const getVolunteerProjects = async (userId) => {
             sp.title,
             sp.description,
             sp.location,
+            sp.project_date,
             sp.project_date AS date,
             o.organization_id,
             o.name AS organization_name
@@ -107,7 +108,7 @@ const isVolunteer = async (userId, projectId) => {
 
 
 // ============================================================
-// EXPORT FUNCTIONS
+// EXPORTS
 // ============================================================
 
 export {
