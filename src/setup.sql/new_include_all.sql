@@ -1,6 +1,7 @@
 -- =========================================================
 -- CSE 340 - DATABASE SETUP
--- Complete database rebuild
+-- Week 06 - Complete Database Rebuild
+-- Authentication + Authorization + Volunteering
 -- =========================================================
 
 
@@ -8,14 +9,93 @@
 -- 1. REMOVE EXISTING TABLES
 -- =========================================================
 
+DROP TABLE IF EXISTS project_volunteer CASCADE;
 DROP TABLE IF EXISTS project_category CASCADE;
 DROP TABLE IF EXISTS service_project CASCADE;
 DROP TABLE IF EXISTS category CASCADE;
 DROP TABLE IF EXISTS organization CASCADE;
+DROP TABLE IF EXISTS users CASCADE;
+DROP TABLE IF EXISTS roles CASCADE;
 
 
 -- =========================================================
--- 2. CREATE ORGANIZATION TABLE
+-- 2. CREATE ROLES TABLE
+-- =========================================================
+
+CREATE TABLE roles (
+    role_id SERIAL PRIMARY KEY,
+    role_name VARCHAR(50) UNIQUE NOT NULL,
+    role_description TEXT
+);
+
+
+-- =========================================================
+-- 3. INSERT ROLES
+-- =========================================================
+
+INSERT INTO roles (
+    role_name,
+    role_description
+)
+VALUES
+(
+    'user',
+    'Standard user with basic access'
+),
+(
+    'admin',
+    'Administrator with full system access'
+);
+
+
+-- =========================================================
+-- 4. CREATE USERS TABLE
+-- =========================================================
+
+CREATE TABLE users (
+    user_id SERIAL PRIMARY KEY,
+    username VARCHAR(100) UNIQUE NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    role_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_user_role
+        FOREIGN KEY (role_id)
+        REFERENCES roles (role_id)
+);
+
+
+-- =========================================================
+-- 5. CREATE ADMIN TESTING ACCOUNT
+-- =========================================================
+--
+-- Email: admin@example.com
+-- Password: cse340!
+--
+-- The password is stored as a bcrypt hash.
+-- =========================================================
+
+INSERT INTO users (
+    username,
+    email,
+    password_hash,
+    role_id
+)
+VALUES (
+    'admin',
+    'admin@example.com',
+    '$2b$10$2zYO1IkMpJQGZEoGDlSLQ.P4A/np30w1Bc0Dy3o1QWq0/Q0zBzuQe',
+    (
+        SELECT role_id
+        FROM roles
+        WHERE role_name = 'admin'
+    )
+);
+
+
+-- =========================================================
+-- 6. CREATE ORGANIZATION TABLE
 -- =========================================================
 
 CREATE TABLE organization (
@@ -28,7 +108,7 @@ CREATE TABLE organization (
 
 
 -- =========================================================
--- 3. CREATE SERVICE PROJECT TABLE
+-- 7. CREATE SERVICE PROJECT TABLE
 -- =========================================================
 
 CREATE TABLE service_project (
@@ -46,7 +126,7 @@ CREATE TABLE service_project (
 
 
 -- =========================================================
--- 4. CREATE CATEGORY TABLE
+-- 8. CREATE CATEGORY TABLE
 -- =========================================================
 
 CREATE TABLE category (
@@ -56,7 +136,7 @@ CREATE TABLE category (
 
 
 -- =========================================================
--- 5. CREATE PROJECT CATEGORY JUNCTION TABLE
+-- 9. CREATE PROJECT CATEGORY JUNCTION TABLE
 -- =========================================================
 
 CREATE TABLE project_category (
@@ -78,11 +158,48 @@ CREATE TABLE project_category (
 
 
 -- =========================================================
--- 6. INSERT ORGANIZATIONS
+-- 10. CREATE PROJECT VOLUNTEER JUNCTION TABLE
+-- =========================================================
+--
+-- This table creates a many-to-many relationship:
+--
+-- One user can volunteer for many projects.
+-- One project can have many volunteers.
+--
+-- user_id + project_id together form the primary key,
+-- preventing the same user from volunteering for the
+-- same project more than once.
 -- =========================================================
 
-INSERT INTO organization
-    (name, description, contact_email, logo_filename)
+CREATE TABLE project_volunteer (
+    user_id INT NOT NULL,
+    project_id INT NOT NULL,
+    volunteer_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    PRIMARY KEY (user_id, project_id),
+
+    CONSTRAINT fk_project_volunteer_user
+        FOREIGN KEY (user_id)
+        REFERENCES users (user_id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_project_volunteer_project
+        FOREIGN KEY (project_id)
+        REFERENCES service_project (project_id)
+        ON DELETE CASCADE
+);
+
+
+-- =========================================================
+-- 11. INSERT ORGANIZATIONS
+-- =========================================================
+
+INSERT INTO organization (
+    name,
+    description,
+    contact_email,
+    logo_filename
+)
 VALUES
 (
     'BrightFuture Builders',
@@ -99,17 +216,22 @@ VALUES
 (
     'UnityServe Volunteers',
     'A volunteer coordination group supporting local charities and service initiatives.',
-    'hello@unityunityserve.org',
+    'hello@unityserve.org',
     'unityserve-logo.png'
 );
 
 
 -- =========================================================
--- 7. INSERT 18 SERVICE PROJECTS
+-- 12. INSERT SERVICE PROJECTS
 -- =========================================================
 
-INSERT INTO service_project
-    (organization_id, title, description, location, project_date)
+INSERT INTO service_project (
+    organization_id,
+    title,
+    description,
+    location,
+    project_date
+)
 VALUES
 
 -- ---------------------------------------------------------
@@ -272,7 +394,7 @@ VALUES
 
 
 -- =========================================================
--- 8. INSERT CATEGORIES
+-- 13. INSERT CATEGORIES
 -- =========================================================
 
 INSERT INTO category (name)
@@ -284,11 +406,13 @@ VALUES
 
 
 -- =========================================================
--- 9. ASSIGN CATEGORIES TO PROJECTS
+-- 14. ASSIGN CATEGORIES TO PROJECTS
 -- =========================================================
 
-INSERT INTO project_category
-    (project_id, category_id)
+INSERT INTO project_category (
+    project_id,
+    category_id
+)
 VALUES
 
 -- Project 1
@@ -348,7 +472,32 @@ VALUES
 
 
 -- =========================================================
--- 10. VERIFY ORGANIZATIONS
+-- 15. VERIFY ROLES
+-- =========================================================
+
+SELECT *
+FROM roles
+ORDER BY role_id;
+
+
+-- =========================================================
+-- 16. VERIFY USERS
+-- =========================================================
+
+SELECT
+    u.user_id,
+    u.username,
+    u.email,
+    r.role_name,
+    u.created_at
+FROM users u
+JOIN roles r
+    ON u.role_id = r.role_id
+ORDER BY u.user_id;
+
+
+-- =========================================================
+-- 17. VERIFY ORGANIZATIONS
 -- =========================================================
 
 SELECT *
@@ -357,7 +506,7 @@ ORDER BY organization_id;
 
 
 -- =========================================================
--- 11. VERIFY PROJECTS
+-- 18. VERIFY PROJECTS
 -- =========================================================
 
 SELECT
@@ -370,7 +519,7 @@ ORDER BY project_id;
 
 
 -- =========================================================
--- 12. VERIFY CATEGORIES
+-- 19. VERIFY CATEGORIES
 -- =========================================================
 
 SELECT *
@@ -379,7 +528,7 @@ ORDER BY category_id;
 
 
 -- =========================================================
--- 13. VERIFY PROJECT-CATEGORY RELATIONSHIPS
+-- 20. VERIFY PROJECT-CATEGORY RELATIONSHIPS
 -- =========================================================
 
 SELECT *
@@ -387,71 +536,10 @@ FROM project_category
 ORDER BY project_id, category_id;
 
 
-//* SQL statement to create a table named roles *//
-CREATE TABLE roles (
-    role_id SERIAL PRIMARY KEY,
-    role_name VARCHAR(50) UNIQUE NOT NULL,
-    role_description TEXT
-);
-
-INSERT INTO roles (role_name, role_description) VALUES 
-    ('user', 'Standard user with basic access'),
-    ('admin', 'Administrator with full system access');
-
--- Verify the data was inserted
-SELECT * FROM roles;
-
-//* SQL statement to create a table named users */
-CREATE TABLE users (
-    user_id SERIAL PRIMARY KEY,
-    username VARCHAR(100) UNIQUE NOT NULL,
-    email VARCHAR(100) UNIQUE NOT NULL,
-    password_hash VARCHAR(255) NOT NULL,
-    role_id INT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-
-    CONSTRAINT fk_user_role
-        FOREIGN KEY (role_id)
-        REFERENCES roles (role_id)
-);
-
-
-
--- Insert a test user
-INSERT INTO users (username, email, password_hash, role_id) 
-VALUES ('testuser', 'test@example.com', 'placeholder_hash', 1);
-
--- Join users and roles to see complete information
-SELECT u.user_id, u.useername, u.email, r.role_name, r.role_description
-FROM users u
-JOIN roles r ON u.role_id = r.role_id;
-
--- Delete the test user
-DELETE FROM users WHERE email = 'test@example.com';
-
-UPDATE public.users
-SET password_hash = '$2b$10$2zYO1IkMpJQGZEoGDlSLQ.P4A/np30w1Bc0Dy3o1QWq0/Q0zBzuQe'
-WHERE email = 'admin@example.com';
-
 -- =========================================================
--- CSE 340 - WEEK 06
--- Volunteer Relationship Table
+-- 21. VERIFY PROJECT-VOLUNTEER TABLE
 -- =========================================================
 
-CREATE TABLE project_volunteer (
-    user_id INT NOT NULL,
-    project_id INT NOT NULL,
-    volunteer_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-
-    PRIMARY KEY (user_id, project_id),
-
-    CONSTRAINT fk_project_volunteer_user
-        FOREIGN KEY (user_id)
-        REFERENCES users (user_id)
-        ON DELETE CASCADE,
-
-    CONSTRAINT fk_project_volunteer_project
-        FOREIGN KEY (project_id)
-        REFERENCES service_project (project_id)
-        ON DELETE CASCADE
-);
+SELECT *
+FROM project_volunteer
+ORDER BY project_id, user_id;

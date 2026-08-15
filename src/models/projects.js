@@ -1,119 +1,131 @@
 import db from "./db.js";
 
-const getAllProjects = async () => {
-    const query = `
-        SELECT project_id, organization_id, title, description, location, project_date
-        FROM public.service_project;
-    `;
 
-    const result = await db.query(query);
+// ============================================================
+// GET ALL UPCOMING PROJECTS
+// ============================================================
 
-    return result.rows;
-};
+const getUpcomingProjects = async (numberOfProjects) => {
 
-
-const getProjectsByOrganizationId = async (organizationId) => {
-    const query = `
+    const sql = `
         SELECT
-          project_id,
-          organization_id,
-          title,
-          description,
-          location,
-          project_date
-        FROM public.service_project
-        WHERE organization_id = $1
-        ORDER BY project_date;
-    `;
-
-    const queryParams = [organizationId];
-
-    console.log("QUERY BEING EXECUTED:");
-    console.log(query);
-
-    const result = await db.query(query, queryParams);
-
-    return result.rows;
-};
-
-
-/**
- * Get the next upcoming service projects.
- * @param {number} number_of_projects - Number of projects to return
- * @returns {Array} Upcoming service projects
- */
-const getUpcomingProjects = async (number_of_projects) => {
-    const query = `
-        SELECT
-          sp.project_id,
-          sp.title,
-          sp.description,
-          sp.project_date AS date,
-          sp.location,
-          o.organization_id,
-          o.name AS organization_name
+            sp.project_id,
+            sp.organization_id,
+            sp.title,
+            sp.description,
+            sp.location,
+            sp.project_date,
+            sp.project_date AS date,
+            o.name AS organization_name
         FROM public.service_project AS sp
         INNER JOIN public.organization AS o
-          ON sp.organization_id = o.organization_id
+            ON sp.organization_id = o.organization_id
         WHERE sp.project_date >= CURRENT_DATE
         ORDER BY sp.project_date ASC
         LIMIT $1;
     `;
 
-    const result = await db.query(query, [number_of_projects]);
+    const result = await db.query(sql, [numberOfProjects]);
 
     return result.rows;
 };
 
 
-/**
- * Get one service project by ID.
- * @param {number} id - Service project ID
- * @returns {Object} Service project details
- */
-const getProjectDetails = async (id) => {
-    const query = `
+// ============================================================
+// GET PROJECTS BY ORGANIZATION
+// ============================================================
+
+const getProjectsByOrganizationId = async (organizationId) => {
+
+    const sql = `
         SELECT
-          sp.project_id,
-          sp.title,
-          sp.description,
-          sp.project_date AS date,
-          sp.location,
-          o.organization_id,
-          o.name AS organization_name
+            sp.project_id,
+            sp.organization_id,
+            sp.title,
+            sp.description,
+            sp.location,
+            sp.project_date,
+            sp.project_date AS date
+        FROM public.service_project AS sp
+        WHERE sp.organization_id = $1
+        ORDER BY sp.project_date ASC;
+    `;
+
+    const result = await db.query(sql, [organizationId]);
+
+    return result.rows;
+};
+
+
+// ============================================================
+// GET PROJECT DETAILS
+// ============================================================
+
+const getProjectDetails = async (projectId) => {
+
+    const sql = `
+        SELECT
+            sp.project_id,
+            sp.organization_id,
+            sp.title,
+            sp.description,
+            sp.location,
+            sp.project_date,
+            sp.project_date AS date,
+            o.name AS organization_name
         FROM public.service_project AS sp
         INNER JOIN public.organization AS o
-          ON sp.organization_id = o.organization_id
+            ON sp.organization_id = o.organization_id
         WHERE sp.project_id = $1;
     `;
 
-    const result = await db.query(query, [id]);
+    const result = await db.query(sql, [projectId]);
 
     return result.rows[0];
 };
-// creatProject table for creating a new project in the database
-const createProject = async (title, description, location, date, organizationId) => {
-    const query = `
-      INSERT INTO public.service_project (title, description, location, project_date, organization_id)
-      VALUES ($1, $2, $3, $4, $5)
-      RETURNING project_id;
+
+
+// ============================================================
+// CREATE NEW PROJECT
+// ============================================================
+
+const createProject = async (
+    title,
+    description,
+    location,
+    date,
+    organizationId
+) => {
+
+    const sql = `
+        INSERT INTO public.service_project
+        (
+            organization_id,
+            title,
+            description,
+            location,
+            project_date
+        )
+        VALUES ($1, $2, $3, $4, $5)
+        RETURNING project_id;
     `;
 
-    const queryParams = [title, description, location, date, organizationId];
-    const result = await db.query(query, queryParams);
-
-    if (result.rows.length === 0) {
-        throw new Error('Failed to create project');
-    }
-
-    if (process.env.ENABLE_SQL_LOGGING === 'true') {
-        console.log('Created new project with ID:', result.rows[0].project_id);
-    }
+    const result = await db.query(sql, [
+        organizationId,
+        title,
+        description,
+        location,
+        date
+    ]);
 
     return result.rows[0].project_id;
-}
+};
 
-// updateproject function to update an existing project in the database
+
+// ============================================================
+// UPDATE PROJECT
+// ============================================================
+
 const updateProject = async (
     projectId,
     title,
@@ -123,51 +135,38 @@ const updateProject = async (
     organizationId
 ) => {
 
-    const query = `
+    const sql = `
         UPDATE public.service_project
         SET
-            title = $1,
-            description = $2,
-            location = $3,
-            project_date = $4,
-            organization_id = $5
-        WHERE project_id = $6
-        RETURNING project_id;
+            organization_id = $1,
+            title = $2,
+            description = $3,
+            location = $4,
+            project_date = $5
+        WHERE project_id = $6;
     `;
 
-    const queryParams = [
+    const result = await db.query(sql, [
+        organizationId,
         title,
         description,
         location,
         date,
-        organizationId,
         projectId
-    ];
+    ]);
 
-    const result = await db.query(query, queryParams);
-
-    if (result.rows.length === 0) {
-        throw new Error("Project not found.");
-    }
-
-    if (process.env.ENABLE_SQL_LOGGING === "true") {
-        console.log(
-            "Updated Project:",
-            result.rows[0].project_id
-        );
-    }
-
-    return result.rows[0].project_id;
-
+    return result.rowCount;
 };
 
-// Export the model functions
+
+// ============================================================
+// EXPORT ALL PROJECT MODEL FUNCTIONS
+// ============================================================
+
 export {
-    getAllProjects,
-    getProjectsByOrganizationId,
     getUpcomingProjects,
+    getProjectsByOrganizationId,
     getProjectDetails,
     createProject,
     updateProject
 };
-

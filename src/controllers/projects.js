@@ -9,6 +9,10 @@ import {
 import { getCategoriesByProjectId } from "../models/categories.js";
 
 import { getAllOrganizations } from "../models/organizations.js";
+import {
+    isVolunteer
+} from "../models/volunteers.js";
+
 import { body, validationResult } from "express-validator";
 
 
@@ -56,29 +60,73 @@ const showProjectsPage = async (req, res, next) => {
 
 // Display one project and its categories (// Controller for a single Project page)
 
+// ============================================================
+// SHOW PROJECT DETAILS PAGE
+// ============================================================
+
 const showProjectDetailsPage = async (req, res, next) => {
+
     try {
+
+        // Get project ID from URL
         const project_id = req.params.id;
 
+        // Get project information
         const project = await getProjectDetails(project_id);
 
+        // Check if project exists
         if (!project) {
+
             return next({
                 status: 404,
-                message: "Project not found",
+                message: "Project not found"
             });
+
         }
 
-        const categories = await getCategoriesByProjectId(project_id);
+        // Get categories for this project
+        const categories =
+            await getCategoriesByProjectId(project_id);
 
+
+        // ====================================================
+        // WEEK 6 VOLUNTEER FUNCTIONALITY
+        // ====================================================
+
+        // Default to false because a visitor is not a volunteer
+        let volunteerStatus = false;
+
+        // Only check volunteer status if a user is logged in
+        if (req.session.user) {
+
+            volunteerStatus = await isVolunteer(
+                req.session.user.user_id,
+                project_id
+            );
+
+        }
+
+
+        // Render project details page
         res.render("project", {
+
             title: project.title,
+
             project,
+
             categories,
+
+            // Send volunteer status to EJS
+            volunteerStatus
+
         });
+
     } catch (error) {
+
         next(error);
+
     }
+
 };
 
 // Show the New Project form
