@@ -433,6 +433,7 @@ UPDATE public.users
 SET password_hash = '$2b$10$2zYO1IkMpJQGZEoGDlSLQ.P4A/np30w1Bc0Dy3o1QWq0/Q0zBzuQe'
 WHERE email = 'admin@example.com';
 
+
 -- =========================================================
 -- CSE 340 - WEEK 06
 -- Volunteer Relationship Table
