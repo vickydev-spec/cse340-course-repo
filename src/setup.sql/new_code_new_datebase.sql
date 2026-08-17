@@ -346,4 +346,5 @@ SELECT * FROM service_project;
 
 SELECT * FROM category;
 
+
 SELECT * FROM project_category;

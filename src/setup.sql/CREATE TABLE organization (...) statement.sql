@@ -359,7 +359,7 @@ VALUES
 (16, 1),
 (17, 2),
 (18, 3);
-
+/* THIS IS THE FIRST DATABASE I CREATED*/
 /* Your category IDs are:
 
 category_id	        Category
